@@ -115,7 +115,7 @@ app.get('/', (req, res) => {
   }
   res.json({
     message: 'Personalized Language Learning API v1.0',
-    documentation: '/api-docs',
+    documentation: '/swagger',
     endpoints: {
       register: 'POST /api/v1/register',
       login: 'POST /api/v1/auth/login',

@@ -90,26 +90,31 @@ Reels and games, driven by one word-level learner model.
   </tr>
 </table>
 
-## 🧰 Prerequisites
+## 💻 Run It Locally
 
-- Node.js 18+ & npm
+### 🧰 Prerequisites
+
+- Node.js 20.19.4+ & npm
 - Python 3.11+ (for the reels service)
 - PostgreSQL 18
 - Git
+- [Expo Go](https://expo.dev/go) installed on your Android or iOS phone
 
-## 📥 Clone the Repository
+### 📥 Clone the Repository
 
 ```bash
 git clone https://github.com/Matin-Marzie/bsc_thesis_ionian_university
 cd bsc_thesis_ionian_university
 ```
 
-## 🗄️ Database Setup
+### 🗄️ Database Setup
 
 Create the database and user, then load the schema and data:
 
 ```bash
 # Create user and database (defaults used by the backend and reels service)
+# (macOS/Homebrew: replace "sudo -u postgres psql" with "psql postgres")
+# (Windows: replace "sudo -u postgres psql" with "psql -U postgres")
 sudo -u postgres psql -c "CREATE USER root WITH PASSWORD '1234';"
 sudo -u postgres psql -c "CREATE DATABASE thesis_db OWNER root;"
 
@@ -123,7 +128,11 @@ psql -h localhost -U root -d thesis_db -f database/glosy_data.sql
 
 The backend reads its database settings from `backend/.env` (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
 
-## 🖥️ Backend Setup
+### 🖥️ Backend Setup
+
+In `backend/.env`, set `ACCESS_TOKEN_SECRET` and `REFRESH_TOKEN_SECRET` to any long random strings, and copy the same `ACCESS_TOKEN_SECRET` into `reels-service/.env`.
+
+Open a new terminal in the `bsc_thesis_ionian_university` folder:
 
 ```bash
 # Navigate to backend directory
@@ -137,35 +146,41 @@ npm run dev
 ```
 
 - Backend: `http://localhost:3500`
-- API documentation: `http://localhost:3500/api-docs`
+- API documentation: `http://localhost:3500/swagger`
 
-## 🎬 Reels Service Setup
+### 🎬 Reels Service Setup
 
-Requires Python 3.11+ and a running PostgreSQL database:
+Requires Python 3.11+ and a running PostgreSQL database.
+
+Open a new terminal in the `bsc_thesis_ionian_university` folder:
 
 ```bash
 # Navigate to reels-service directory
-cd ../reels-service
+cd reels-service
 
 # Create and activate a virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python3 -m venv venv  # On Windows: python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate (PowerShell: venv\Scripts\Activate.ps1)
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Start development server
-python3 main.py
+python3 main.py  # On Windows: python main.py
 ```
 
 - Reels service: `http://localhost:3600`
 - API documentation: `http://localhost:3600/docs`
 
-## 📲 Frontend Setup
+### 📲 Frontend Setup
+
+In `frontend/.env`, replace `COMPUTER_IP_ADDRESS` with your computer's local IP address (for example `192.168.1.20`).
+
+Open a new terminal in the `bsc_thesis_ionian_university` folder:
 
 ```bash
 # Navigate to frontend directory
-cd ../frontend
+cd frontend
 
 # Install dependencies
 npm install
@@ -174,23 +189,16 @@ npm install
 npx expo start
 ```
 
-Follow the prompts to run on an Android emulator, iOS simulator, or a device via Expo Go.
+Then open the app on your phone with Expo Go:
 
-## 🗂️ Project Structure
+- **Android:** open the Expo Go app and scan the QR code shown in the terminal.
+- **iOS:** scan the QR code with the Camera app, then tap the link to open it in Expo Go.
 
-```
-bsc_thesis_ionian_university/
-├── backend/          # Node.js/Express API
-├── frontend/         # React Native (Expo) app
-├── reels-service/    # Python reels recommendation service
-├── database/         # PostgreSQL schema & data
-├── manuscript/       # LaTeX source of the thesis
-└── scripts/          # Evaluation scripts
-```
+> [!NOTE]
+> Your phone and computer must be on the same Wi-Fi network.
 
-## 📖 API Documentation
-
-Visit `http://localhost:3500/api-docs` for full Swagger API documentation.
+> [!IMPORTANT]
+> Google Sign-In needs a native build (development build or the release APK), so it is commented out in `frontend/app/onboarding/login.tsx` and `register.tsx` for Expo Go. Use email sign-up instead.
 
 ## 📜 License
 
