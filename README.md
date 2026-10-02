@@ -1,58 +1,112 @@
-# Developing a Mobile-Assisted Language Learning Application Utilizing Short-Form Video Reels and Hypercasual games
+<div align="center">
 
-## Download the App (Android)
+# Glosy
 
-[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Matin-Marzie/thesis/releases/download/v2.2.0/app-release.apk)
+### Developing a Mobile-Assisted Language Learning Application Utilizing Short-Form Video Reels and Hypercasual Games
 
-Or grab the latest from the [Releases page](https://github.com/Matin-Marzie/thesis/releases/latest).
+*BSc Thesis · Ionian University*
 
-Open the link on your phone, download the APK, and install it (you may need to allow installs from your browser/file manager in Android's settings).
+[![Thesis PDF](https://img.shields.io/badge/Thesis-PDF-B31B1B?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](manuscript/thesis.pdf)
+[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest/download/app-release.apk)
 
-## Prerequisites
+[![CC BY-NC-SA 4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+</div>
+
+---
+
+## 🔗 Links
+
+| Resource | Link |
+| --- | --- |
+| 📄 Thesis (PDF) | [manuscript/thesis.pdf](manuscript/thesis.pdf) |
+| 📱 Android releases | [Releases page](https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest) |
+
+## 📱 Download the App (Android)
+
+Grab the APK from the badge above or from the [Releases page](https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest).
+
+Open the link on your phone, download the APK, and install it.
+
+> [!NOTE]
+> You may need to allow installs from your browser/file manager in Android's settings.
+
+## 🧰 Prerequisites
 
 - Node.js 18+ & npm
-- Docker & Docker Compose (for backend)
+- Python 3.11+ (for the reels service)
+- PostgreSQL 18
 - Git
 
+## 📥 Clone the Repository
 
-## Download app
 ```bash
-git --version
-```
-```bash
-  git clone https://github.com/Matin-Marzie/thesis
+git clone https://github.com/Matin-Marzie/bsc_thesis_ionian_university
+cd bsc_thesis_ionian_university
 ```
 
-## Backend Setup
+## 🗄️ Database Setup
+
+Create the database and user, then load the schema and data:
+
+```bash
+# Create user and database (defaults used by the backend and reels service)
+sudo -u postgres psql -c "CREATE USER root WITH PASSWORD '1234';"
+sudo -u postgres psql -c "CREATE DATABASE thesis_db OWNER root;"
+
+# Load schema, then data
+psql -h localhost -U root -d thesis_db -f database/glosy_structure.sql
+psql -h localhost -U root -d thesis_db -f database/glosy_data.sql
+```
+
+> [!NOTE]
+> The dumps already include every migration in `database/migrations/`, and they need PostgreSQL 18's `psql` to load.
+
+The backend reads its database settings from `backend/.env` (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
+
+## 🖥️ Backend Setup
 
 ```bash
 # Navigate to backend directory
 cd backend
 
-# Check Node.js version
-node --version
-npm --version
-
 # Install dependencies
 npm install
 
-# Start backend with Docker Compose
-docker compose up
+# Start development server
+npm run dev
 ```
 
-Backend runs on `http://localhost:3500`
-API Documentation: `http://localhost:3500/api-docs`
+- Backend: `http://localhost:3500`
+- API documentation: `http://localhost:3500/api-docs`
 
-## Frontend Setup
+## 🎬 Reels Service Setup
+
+Requires Python 3.11+ and a running PostgreSQL database:
+
+```bash
+# Navigate to reels-service directory
+cd ../reels-service
+
+# Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start development server
+python3 main.py
+```
+
+- Reels service: `http://localhost:3600`
+- API documentation: `http://localhost:3600/docs`
+
+## 📲 Frontend Setup
 
 ```bash
 # Navigate to frontend directory
-cd ..
-cd frontend
-
-# Check Node.js version
-node --version
-npm --version
+cd ../frontend
 
 # Install dependencies
 npm install
@@ -61,17 +115,24 @@ npm install
 npx expo start
 ```
 
-Follow the prompts to run on Android emulator, iOS simulator, or device via Expo Go.
+Follow the prompts to run on an Android emulator, iOS simulator, or a device via Expo Go.
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```
-thesis-matin/
+bsc_thesis_ionian_university/
 ├── backend/          # Node.js/Express API
-├── frontend/         # React Native (Expo)
-└── database/         # PostgreSQL schema & data
+├── frontend/         # React Native (Expo) app
+├── reels-service/    # Python reels recommendation service
+├── database/         # PostgreSQL schema & data
+├── manuscript/       # LaTeX source of the thesis
+└── scripts/          # Evaluation scripts
 ```
 
-## API Documentation
+## 📖 API Documentation
 
 Visit `http://localhost:3500/api-docs` for full Swagger API documentation.
+
+## 📜 License
+
+This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
