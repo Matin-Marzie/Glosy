@@ -2,7 +2,7 @@
   "expo": {
     "name": "glosy",
     "slug": "glosy",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/splash-icon.png",
     "scheme": "glosy",
@@ -17,7 +17,8 @@
         "backgroundColor": "#0f8690"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.glosy.app"
+      "package": "com.glosy.app",
+      "versionCode": 3
     },
     "web": {
       "bundler": "metro",
@@ -53,7 +54,8 @@
       "expo-font",
       "expo-secure-store",
       "expo-web-browser",
-      "expo-status-bar"
+      "expo-status-bar",
+      "./plugins/withReleaseSigning"
     ],
     "experiments": {
       "typedRoutes": true
