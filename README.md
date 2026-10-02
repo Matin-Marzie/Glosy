@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/cat.gif" alt="The Glosy cat mascot wagging its tail" width="180">
+<img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/cat.gif" alt="The Glosy cat mascot wagging its tail" width="180">
 
 # Glosy
 
@@ -9,7 +9,7 @@
 *BSc Thesis · Ionian University*
 
 [![Thesis PDF](https://img.shields.io/badge/Thesis-PDF-B31B1B?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](manuscript/thesis.pdf)
-[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest/download/app-release.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Matin-Marzie/Glosy/releases/latest/download/app-release.apk)
 
 [![CC BY-NC-SA 4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -19,7 +19,7 @@
 
 ## 📱 Download the App (Android)
 
-Grab the APK from the badge above or from the [Releases page](https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest).
+Grab the APK from the badge above or from the [Releases page](https://github.com/Matin-Marzie/Glosy/releases/latest).
 
 Open the link on your phone, download the APK, and install it.
 
@@ -29,7 +29,7 @@ Open the link on your phone, download the APK, and install it.
 ## 🧭 How It Works
 
 <p align="center">
-  <img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/system-overview.jpg" alt="System overview: the FSRS spaced-repetition pipeline supplies due words to the recommendation system and to the games; the reels database feeds the recommendation system, which ranks reels; reels and games both send review events back to the FSRS pipeline" width="800">
+  <img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/system-overview.jpg" alt="System overview: the FSRS spaced-repetition pipeline supplies due words to the recommendation system and to the games; the reels database feeds the recommendation system, which ranks reels; reels and games both send review events back to the FSRS pipeline" width="800">
 </p>
 
 Reels and games, driven by one word-level learner model.
@@ -38,16 +38,16 @@ Reels and games, driven by one word-level learner model.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-1.jpg" alt="Onboarding screen 1: Welcome (light mode)" width="180"><br><sub>1 · Welcome (light mode)</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-2.jpg" alt="Onboarding screen 2: Welcome (dark mode)" width="180"><br><sub>2 · Welcome (dark mode)</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-3.jpg" alt="Onboarding screen 3: Before we start" width="180"><br><sub>3 · Before we start</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-4.jpg" alt="Onboarding screen 4: Native language" width="180"><br><sub>4 · Native language</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-1.jpg" alt="Onboarding screen 1: Welcome (light mode)" width="180"><br><sub>1 · Welcome (light mode)</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-2.jpg" alt="Onboarding screen 2: Welcome (dark mode)" width="180"><br><sub>2 · Welcome (dark mode)</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-3.jpg" alt="Onboarding screen 3: Before we start" width="180"><br><sub>3 · Before we start</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-4.jpg" alt="Onboarding screen 4: Native language" width="180"><br><sub>4 · Native language</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-5.jpg" alt="Onboarding screen 5: Learning language" width="180"><br><sub>5 · Learning language</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-6.jpg" alt="Onboarding screen 6: Proficiency level" width="180"><br><sub>6 · Proficiency level</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-7.jpg" alt="Onboarding screen 7: Notifications" width="180"><br><sub>7 · Notifications</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-8.jpg" alt="Onboarding screen 8: Personalization" width="180"><br><sub>8 · Personalization</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-5.jpg" alt="Onboarding screen 5: Learning language" width="180"><br><sub>5 · Learning language</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-6.jpg" alt="Onboarding screen 6: Proficiency level" width="180"><br><sub>6 · Proficiency level</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-7.jpg" alt="Onboarding screen 7: Notifications" width="180"><br><sub>7 · Notifications</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/onboarding-8.jpg" alt="Onboarding screen 8: Personalization" width="180"><br><sub>8 · Personalization</sub></td>
   </tr>
 </table>
 
@@ -55,9 +55,9 @@ Reels and games, driven by one word-level learner model.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/vocabulary.gif" alt="Vocabulary with each word's next review date" width="240"><br><sub>Vocabulary · due dates</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/reels-feed-1.gif" alt="Reels feed playing a video with subtitles" width="240"><br><sub>Reels feed</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/reels-feed-2.gif" alt="Reels feed playing a video with subtitles" width="240"><br><sub>Reels feed</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/vocabulary.gif" alt="Vocabulary with each word's next review date" width="240"><br><sub>Vocabulary · due dates</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/reels-feed-1.gif" alt="Reels feed playing a video with subtitles" width="240"><br><sub>Reels feed</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/reels-feed-2.gif" alt="Reels feed playing a video with subtitles" width="240"><br><sub>Reels feed</sub></td>
   </tr>
 </table>
 
@@ -65,9 +65,9 @@ Reels and games, driven by one word-level learner model.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/create-reel-1.gif" alt="Create screen: picking a video from the library to start a reel" width="240"><br><sub>1 · Choose a video</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/create-reel-2.gif" alt="Sync and Publish screen: marking start/end times and typing a subtitle line with its translation" width="240"><br><sub>2 · Sync each line</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/create-reel-3.gif" alt="Sync and Publish screen: reviewing the captured lines with their timestamps before publishing" width="240"><br><sub>3 · Review &amp; publish</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/create-reel-1.gif" alt="Create screen: picking a video from the library to start a reel" width="240"><br><sub>1 · Choose a video</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/create-reel-2.gif" alt="Sync and Publish screen: marking start/end times and typing a subtitle line with its translation" width="240"><br><sub>2 · Sync each line</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/create-reel-3.gif" alt="Sync and Publish screen: reviewing the captured lines with their timestamps before publishing" width="240"><br><sub>3 · Review &amp; publish</sub></td>
   </tr>
 </table>
 
@@ -75,8 +75,8 @@ Reels and games, driven by one word-level learner model.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/wordle-1.gif" alt="Greek Wordle round in progress, with correct and misplaced letters" width="240"><br><sub>Greek Wordle round</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/wordle-2.gif" alt="A second Greek Wordle round in progress" width="240"><br><sub>Greek Wordle round</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/wordle-1.gif" alt="Greek Wordle round in progress, with correct and misplaced letters" width="240"><br><sub>Greek Wordle round</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/wordle-2.gif" alt="A second Greek Wordle round in progress" width="240"><br><sub>Greek Wordle round</sub></td>
   </tr>
 </table>
 
@@ -84,9 +84,9 @@ Reels and games, driven by one word-level learner model.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/games-hub.gif" alt="The Practice tab's games hub, showing the Word of Wonders and Wordle tiles" width="240"><br><sub>Games hub</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/word-of-wonders-1.gif" alt="Word of Wonders board mid-round: an empty crossword grid over a letter wheel" width="240"><br><sub>Empty board</sub></td>
-    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/word-of-wonders-2.gif" alt="Word of Wonders board later in the round, with several intersecting words placed" width="240"><br><sub>Words placed</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/games-hub.gif" alt="The Practice tab's games hub, showing the Word of Wonders and Wordle tiles" width="240"><br><sub>Games hub</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/word-of-wonders-1.gif" alt="Word of Wonders board mid-round: an empty crossword grid over a letter wheel" width="240"><br><sub>Empty board</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/Glosy/releases/download/media/word-of-wonders-2.gif" alt="Word of Wonders board later in the round, with several intersecting words placed" width="240"><br><sub>Words placed</sub></td>
   </tr>
 </table>
 
@@ -103,8 +103,8 @@ Reels and games, driven by one word-level learner model.
 ### 📥 Clone the Repository
 
 ```bash
-git clone https://github.com/Matin-Marzie/bsc_thesis_ionian_university
-cd bsc_thesis_ionian_university
+git clone https://github.com/Matin-Marzie/Glosy
+cd Glosy
 ```
 
 ### 🗄️ Database Setup
@@ -132,7 +132,7 @@ The backend reads its database settings from `backend/.env` (`DB_HOST`, `DB_PORT
 
 In `backend/.env`, set `ACCESS_TOKEN_SECRET` and `REFRESH_TOKEN_SECRET` to any long random strings, and copy the same `ACCESS_TOKEN_SECRET` into `reels-service/.env`.
 
-Open a new terminal in the `bsc_thesis_ionian_university` folder:
+Open a new terminal in the `Glosy` folder:
 
 ```bash
 # Navigate to backend directory
@@ -152,7 +152,7 @@ npm run dev
 
 Requires Python 3.11+ and a running PostgreSQL database.
 
-Open a new terminal in the `bsc_thesis_ionian_university` folder:
+Open a new terminal in the `Glosy` folder:
 
 ```bash
 # Navigate to reels-service directory
@@ -176,7 +176,7 @@ python3 main.py  # On Windows: python main.py
 
 In `frontend/.env`, replace `COMPUTER_IP_ADDRESS` with your computer's local IP address (for example `192.168.1.20`).
 
-Open a new terminal in the `bsc_thesis_ionian_university` folder:
+Open a new terminal in the `Glosy` folder:
 
 ```bash
 # Navigate to frontend directory
