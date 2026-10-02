@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/cat.gif" alt="The Glosy cat mascot wagging its tail" width="180">
+
 # Glosy
 
 ### Developing a Mobile-Assisted Language Learning Application Utilizing Short-Form Video Reels and Hypercasual Games
@@ -30,6 +32,14 @@ Open the link on your phone, download the APK, and install it.
 
 > [!NOTE]
 > You may need to allow installs from your browser/file manager in Android's settings.
+
+## 🧭 How It Works
+
+<p align="center">
+  <img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/system-overview.jpg" alt="System overview: the FSRS spaced-repetition pipeline supplies due words to the recommendation system and to the games; the reels database feeds the recommendation system, which ranks reels; reels and games both send review events back to the FSRS pipeline" width="800">
+</p>
+
+Reels and games, driven by one word-level learner model.
 
 ## 🧰 Prerequisites
 
