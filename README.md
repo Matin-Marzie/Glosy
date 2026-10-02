@@ -17,13 +17,6 @@
 
 ---
 
-## 🔗 Links
-
-| Resource | Link |
-| --- | --- |
-| 📄 Thesis (PDF) | [manuscript/thesis.pdf](manuscript/thesis.pdf) |
-| 📱 Android releases | [Releases page](https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest) |
-
 ## 📱 Download the App (Android)
 
 Grab the APK from the badge above or from the [Releases page](https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest).
@@ -40,6 +33,62 @@ Open the link on your phone, download the APK, and install it.
 </p>
 
 Reels and games, driven by one word-level learner model.
+
+### 🚀 Onboarding
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-1.jpg" alt="Onboarding screen 1: Welcome (light mode)" width="180"><br><sub>1 · Welcome (light mode)</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-2.jpg" alt="Onboarding screen 2: Welcome (dark mode)" width="180"><br><sub>2 · Welcome (dark mode)</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-3.jpg" alt="Onboarding screen 3: Before we start" width="180"><br><sub>3 · Before we start</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-4.jpg" alt="Onboarding screen 4: Native language" width="180"><br><sub>4 · Native language</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-5.jpg" alt="Onboarding screen 5: Learning language" width="180"><br><sub>5 · Learning language</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-6.jpg" alt="Onboarding screen 6: Proficiency level" width="180"><br><sub>6 · Proficiency level</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-7.jpg" alt="Onboarding screen 7: Notifications" width="180"><br><sub>7 · Notifications</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/onboarding-8.jpg" alt="Onboarding screen 8: Personalization" width="180"><br><sub>8 · Personalization</sub></td>
+  </tr>
+</table>
+
+### 🧠 Spaced Repetition Input & Reels
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/vocabulary.gif" alt="Vocabulary with each word's next review date" width="240"><br><sub>Vocabulary · due dates</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/reels-feed-1.gif" alt="Reels feed playing a video with subtitles" width="240"><br><sub>Reels feed</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/reels-feed-2.gif" alt="Reels feed playing a video with subtitles" width="240"><br><sub>Reels feed</sub></td>
+  </tr>
+</table>
+
+### 🎬 Create a Reel
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/create-reel-1.gif" alt="Create screen: picking a video from the library to start a reel" width="240"><br><sub>1 · Choose a video</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/create-reel-2.gif" alt="Sync and Publish screen: marking start/end times and typing a subtitle line with its translation" width="240"><br><sub>2 · Sync each line</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/create-reel-3.gif" alt="Sync and Publish screen: reviewing the captured lines with their timestamps before publishing" width="240"><br><sub>3 · Review &amp; publish</sub></td>
+  </tr>
+</table>
+
+### 🟩 Wordle-style Game
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/wordle-1.gif" alt="Greek Wordle round in progress, with correct and misplaced letters" width="240"><br><sub>Greek Wordle round</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/wordle-2.gif" alt="A second Greek Wordle round in progress" width="240"><br><sub>Greek Wordle round</sub></td>
+  </tr>
+</table>
+
+### 🔤 Play With Letters (Word of Wonders)
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/games-hub.gif" alt="The Practice tab's games hub, showing the Word of Wonders and Wordle tiles" width="240"><br><sub>Games hub</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/word-of-wonders-1.gif" alt="Word of Wonders board mid-round: an empty crossword grid over a letter wheel" width="240"><br><sub>Empty board</sub></td>
+    <td align="center"><img src="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/download/media/word-of-wonders-2.gif" alt="Word of Wonders board later in the round, with several intersecting words placed" width="240"><br><sub>Words placed</sub></td>
+  </tr>
+</table>
 
 ## 🧰 Prerequisites
 
