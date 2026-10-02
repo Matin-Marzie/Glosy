@@ -101,11 +101,11 @@
     <p class="pitch">Learn a new language from short subtitled video reels, build your vocabulary word by word, and practise with quick games.</p>
 
     <div class="download">
-      <a class="btn" id="download-btn" href="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases/latest/download/app-release.apk">
+      <a class="btn" id="download-btn" href="https://github.com/Matin-Marzie/Glosy/releases/latest/download/app-release.apk">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.87 3.23a11.4 11.4 0 0 0-9.82 0L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
         DOWNLOAD FOR ANDROID
       </a>
-      <p class="release-meta" id="release-meta">Latest release · APK · <a href="https://github.com/Matin-Marzie/bsc_thesis_ionian_university/releases">all versions</a></p>
+      <p class="release-meta" id="release-meta">Latest release · APK · <a href="https://github.com/Matin-Marzie/Glosy/releases">all versions</a></p>
     </div>
   </header>
 
@@ -152,7 +152,7 @@
 
 <script>
   // Fill in the version and size of the newest release; the static text above is the fallback.
-  fetch('https://api.github.com/repos/Matin-Marzie/bsc_thesis_ionian_university/releases/latest')
+  fetch('https://api.github.com/repos/Matin-Marzie/Glosy/releases/latest')
     .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
     .then((release) => {
       const apk = (release.assets || []).find((a) => a.name.endsWith('.apk'));
