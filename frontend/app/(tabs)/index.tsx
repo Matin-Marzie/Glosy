@@ -31,7 +31,7 @@ export default function HomeScreen() {
   const { forceSync } = useAuth();
   const { userVocabulary } = useVocabularyContext();
   const { userSentences } = useSentenceContext();
-  const { dictionary } = useDictionaryContext();
+  const { dictionary, dictionaryLoading } = useDictionaryContext();
   const [search, setSearch] = useState('');
   const [filteredWords, setFilteredWords] = useState([]); // To Do: don't duplicate state, remove filteredWords
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -210,7 +210,16 @@ export default function HomeScreen() {
             editable={!isFilterModalOpen}
           />
 
-          {isSearching ? (
+          {/* Only block on the first load - a background refresh of a stale
+              cached dictionary keeps showing the list it already has */}
+          {dictionaryLoading && words.length === 0 ? (
+            <View style={styles.searchingContainer}>
+              <ActivityIndicator size="large" color={PRIMARY_COLOR} />
+              <Text style={[styles.loadingText, isDark && { color: DARK_COLORS.textSecondary }]}>
+                Loading dictionary...
+              </Text>
+            </View>
+          ) : isSearching ? (
             <View style={styles.searchingContainer}>
               <ActivityIndicator size="large" color={PRIMARY_COLOR} />
             </View>
@@ -269,5 +278,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#9ca3af',
   },
 });

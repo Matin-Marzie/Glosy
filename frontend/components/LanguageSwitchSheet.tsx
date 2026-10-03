@@ -460,6 +460,8 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
                 >
                     <Text style={[styles.title, isDark && { color: DARK_COLORS.text }]}>Your Languages</Text>
 
+                    {errorMessage && <Text style={[styles.error, styles.listError]}>{errorMessage}</Text>}
+
                     {languages.map((language) => {
                         const meta = getLanguageMeta(language.learning_language?.id);
                         const nativeMeta = getLanguageMeta(language.native_language?.id);
@@ -518,8 +520,6 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
                             Connect to the internet to switch languages.
                         </Text>
                     )}
-
-                    {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
                 </BottomSheetScrollView>
             ) : (
                 <BottomSheetView style={[styles.addFlowContainer, { paddingBottom: insets.bottom }]}>
@@ -667,6 +667,13 @@ const styles = StyleSheet.create({
         color: '#d32f2f',
         textAlign: 'center',
         marginTop: 8,
+    },
+    // Sits between the title and the language rows, so it's visible without
+    // scrolling past a long list
+    listError: {
+        textAlign: 'left',
+        marginTop: -8,
+        marginBottom: 12,
     },
     addFlowContainer: {
         flex: 1,

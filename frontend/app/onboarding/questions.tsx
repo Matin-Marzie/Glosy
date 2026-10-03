@@ -33,6 +33,9 @@ export default function OnboardingQuestions() {
   const { setIsAuthenticated, setHasCompletedOnboarding, pendingGoogleAuth, setPendingGoogleAuth } = useAuth();
   const { fetchDictionary } = useDictionaryContext();
   const [currentSlide, setCurrentSlide] = useState(0);
+  // True while completeOnboarding runs - the dictionary fetch (and Google
+  // sign-up) can take ~50s when the backend is cold-starting
+  const [isCompleting, setIsCompleting] = useState(false);
 
   // User selections
   const [selectedNativeLanguage, setSelectedNativeLanguage] = useState<{ id: number, name: string, code: string } | null>(null);
@@ -44,6 +47,7 @@ export default function OnboardingQuestions() {
   // Handle hardware back button
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isCompleting) return true; // Don't leave mid-completion
       if (currentSlide > 0) {
         setCurrentSlide(currentSlide - 1);
         return true; // Prevent default behavior
@@ -52,18 +56,20 @@ export default function OnboardingQuestions() {
     });
 
     return () => backHandler.remove();
-  }, [currentSlide]);
+  }, [currentSlide, isCompleting]);
 
   const handleNext = () => {
     if (currentSlide < 4) {
       setCurrentSlide(currentSlide + 1);
-    } else if (currentSlide === 4) {
+    } else if (currentSlide === 4 && !isCompleting) {
       // Last slide - complete onboarding
-      completeOnboarding();
+      setIsCompleting(true);
+      completeOnboarding().finally(() => setIsCompleting(false));
     }
   };
 
   const handleBack = () => {
+    if (isCompleting) return;
     if (currentSlide > 0) {
       setCurrentSlide(currentSlide - 1);
     } else {
@@ -221,6 +227,7 @@ export default function OnboardingQuestions() {
     <PersonalizationSlide
       key="personalization"
       onNext={handleNext}
+      loading={isCompleting}
       selectedPreferences={selectedPreferences}
       setSelectedPreferences={setSelectedPreferences}
       selectedAge={selectedAge}

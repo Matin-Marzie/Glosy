@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { PRIMARY_COLOR } from '@/constants/App';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -8,6 +8,7 @@ import TouchableOpacity from '@/components/TouchableOpacity';
 
 interface PersonalizationSlideProps {
   onNext: () => void;
+  loading?: boolean;
   selectedPreferences: string[];
   setSelectedPreferences: (val: string[]) => void;
   selectedAge: string;
@@ -16,6 +17,7 @@ interface PersonalizationSlideProps {
 
 export default function PersonalizationSlide({
   onNext,
+  loading = false,
   selectedPreferences,
   setSelectedPreferences,
   selectedAge,
@@ -122,9 +124,13 @@ export default function PersonalizationSlide({
           !canContinue && (isDark ? { backgroundColor: '#444' } : styles.continueButtonDisabled),
         ]}
         onPress={onNext}
-        disabled={!canContinue}
+        disabled={!canContinue || loading}
       >
-        <Text style={styles.continueButtonText}>Continue</Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" style={styles.continueButtonSpinner} />
+        ) : (
+          <Text style={styles.continueButtonText}>Continue</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -140,6 +146,8 @@ const styles = StyleSheet.create({
   continueButton: { backgroundColor: PRIMARY_COLOR, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
   continueButtonDisabled: { backgroundColor: '#ccc' },
   continueButtonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  // Same height as the text line so the button doesn't shrink while loading
+  continueButtonSpinner: { height: 22 },
   sectionTitle: { fontSize: 18, fontWeight: '600', color: '#333' },
   sectionSubtitle: { fontSize: 14, color: '#666', marginBottom: 4 },
   preferencesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
