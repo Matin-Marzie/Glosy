@@ -18,6 +18,7 @@ import { useSentenceContext } from '@/context/SentenceContext';
 import { VOCABULARY_ACTIONS, DEFAULT_VOCABULARY_CHANGES } from '@/hooks/useVocabulary';
 import { expandUserVocabulary } from '@/utils/expandVocabulary';
 import { SENTENCE_ACTIONS, DEFAULT_SENTENCE_CHANGES } from '@/hooks/useSentences';
+import { getLearningLanguageChangeWait, recordLearningLanguageChange, formatLearningLanguageChangeWait } from '@/utils/learningLanguageChangeLimit';
 import { switchCurrentLanguage, addLanguage as addLanguageApi, deleteLanguage as deleteLanguageApi } from '@/api/language';
 import LanguageSelectionSlide from '@/app/onboarding/components/LanguageSelectionSlide';
 import ProficiencySlide from '@/app/onboarding/components/ProficiencySlide';
@@ -188,6 +189,13 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
         if (!isOnline) return;
 
         setErrorMessage(null);
+
+        const waitMs = await getLearningLanguageChangeWait();
+        if (waitMs > 0) {
+            setErrorMessage(formatLearningLanguageChangeWait(waitMs));
+            return;
+        }
+
         setSwitchingId(language.id);
 
         try {
@@ -228,6 +236,8 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
                     })),
                 }));
             }
+
+            recordLearningLanguageChange();
 
             // Dictionary and Reels both react to the userProgress update above
             // on their own (DictionaryContext and ReelsContext each watch the
@@ -347,6 +357,13 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
         if (!addNative || !addTarget || !addLevel || isAddingLanguage) return;
 
         setAddError(null);
+
+        const waitMs = await getLearningLanguageChangeWait();
+        if (waitMs > 0) {
+            setAddError(formatLearningLanguageChangeWait(waitMs));
+            return;
+        }
+
         setIsAddingLanguage(true);
 
         try {
@@ -375,6 +392,7 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
             // for sentences) - dispatched anyway for uniform response handling.
             sentenceDispatch({ type: SENTENCE_ACTIONS.SET, payload: response.user_sentences });
             await setSentenceChanges(DEFAULT_SENTENCE_CHANGES);
+            recordLearningLanguageChange();
 
             setMode('list');
             if (ref && 'current' in ref) {

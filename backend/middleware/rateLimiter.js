@@ -82,12 +82,16 @@ export const profilePictureLimiter = rateLimit({
 });
 
 // No auth required and no LIMIT on the underlying query - each call returns
-// a whole language's dictionary. A real client fetches this rarely (on
-// language select/switch), so this mainly guards against scraping the full
-// word list or hammering a heavy, unauthenticated query.
+// a whole language's dictionary. The client caps language changes at the same
+// rate (changeLearningLanguageLimit) and only fetches when the dictionary isn't
+// already cached on the phone. It does NOT prevent scraping - a single
+// request already returns a pair's whole word list, which the app needs
+// anyway. It only stops one client from repeatedly running a heavy,
+// unauthenticated query and saturating the server.
+// 20 requests per 15 minutes per IP
 export const dictionaryLimiter = rateLimit({
-  windowMs: 2 * 60 * 1000,
-  max: 1,
+  windowMs: 15 * 60 * 1000,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many dictionary requests.\nYou have reached the limit.\nPlease try again later.' },
