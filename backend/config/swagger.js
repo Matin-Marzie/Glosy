@@ -13,8 +13,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3500/api/v1',
-        description: 'Development server',
+        url: 'https://api.glosy.gr/api/v1',
+        description: 'Production server',
       },
     ],
     components: {
@@ -539,7 +539,7 @@ const options = {
       },
     },
   },
-  apis: ['./routes/**/*.js', './controllers/**/*.js', './server.js'],
+  apis: ['./routes/**/*.js', './controllers/**/*.js', './app.js', './server.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

@@ -205,10 +205,10 @@ router.patch('/profile', verifyJWT, userController.updateProfile);
 
 /**
  * @swagger
- * /user/profile-picture:
- *   patch:
- *     summary: Upload/replace current user's profile picture
- *     description: Uploads an image file and sets it as the authenticated user's profile picture, replacing any previous one uploaded through this endpoint
+ * /user/profile-picture/upload-url:
+ *   post:
+ *     summary: Get a presigned URL for uploading a profile picture
+ *     description: Returns a presigned CDN URL the client uploads the image to directly (HTTP PUT), plus the object key to confirm afterwards via PATCH /user/profile-picture
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
@@ -216,13 +216,68 @@ router.patch('/profile', verifyJWT, userController.updateProfile);
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
+ *             required: [contentType, size]
  *             properties:
- *               profile_picture:
+ *               fileName:
  *                 type: string
- *                 format: binary
+ *                 description: Original file name, used to derive the object key's extension
+ *               contentType:
+ *                 type: string
+ *                 description: Image MIME type
+ *                 example: image/jpeg
+ *               size:
+ *                 type: integer
+ *                 description: File size in bytes (maximum 5MB)
+ *     responses:
+ *       200:
+ *         description: Presigned upload URL created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 key:
+ *                   type: string
+ *                   description: Object key to send to PATCH /user/profile-picture once the upload completes
+ *                 url:
+ *                   type: string
+ *                   description: Presigned URL to PUT the image to
+ *       400:
+ *         description: Invalid image type or file larger than 5MB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       429:
+ *         description: Too many profile picture requests
+ * /user/profile-picture:
+ *   patch:
+ *     summary: Set current user's profile picture from an uploaded file
+ *     description: Confirms an image uploaded via the presigned URL from POST /user/profile-picture/upload-url and sets it as the authenticated user's profile picture, deleting any previous one uploaded by the user
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [key]
+ *             properties:
+ *               key:
+ *                 type: string
+ *                 description: Object key returned by POST /user/profile-picture/upload-url
  *     responses:
  *       200:
  *         description: Profile picture updated successfully
@@ -240,7 +295,7 @@ router.patch('/profile', verifyJWT, userController.updateProfile);
  *                     user:
  *                       $ref: '#/components/schemas/User'
  *       400:
- *         description: Missing file, invalid file type, or file too large
+ *         description: Missing or invalid key
  *         content:
  *           application/json:
  *             schema:

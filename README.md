@@ -146,7 +146,7 @@ npm run dev
 ```
 
 - Backend: `http://localhost:3500`
-- API documentation: `http://localhost:3500/swagger`
+- API documentation: `http://localhost:3500/swagger` (live: https://api.glosy.gr/swagger/)
 
 ### 🎬 Reels Service Setup
 

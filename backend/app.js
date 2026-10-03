@@ -86,12 +86,21 @@ app.use(`/api/${API_VERSION}/reel`, reelRouter);
 app.use(`/api/${API_VERSION}/feedback`, feedbackRouter);
 app.use(`/api/${API_VERSION}/videos`, videosRouter);
 // Root route
+// Listed from the Swagger spec so it stays in sync with the documented routes.
+const API_ENDPOINTS = Object.entries(swaggerSpec.paths)
+  .filter(([route]) => route !== '/')
+  .flatMap(([route, ops]) => Object.keys(ops)
+    .filter((method) => method !== 'servers')
+    .map((method) => `${method.toUpperCase()} /api/${API_VERSION}${route.replace(/\{(\w+)\}/g, ':$1')}`));
+
 /**
  * @swagger
  * /:
+ *   servers:
+ *     - url: https://api.glosy.gr
  *   get:
  *     summary: API information
- *     description: Get API version and available endpoints
+ *     description: Get API version and the documented endpoints
  *     tags: [Info]
  *     responses:
  *       200:
@@ -106,7 +115,10 @@ app.use(`/api/${API_VERSION}/videos`, videosRouter);
  *                 documentation:
  *                   type: string
  *                 endpoints:
- *                   type: object
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: 'GET /api/v1/user/me'
  */
 
 app.get('/', (req, res) => {
@@ -116,18 +128,7 @@ app.get('/', (req, res) => {
   res.json({
     message: 'Personalized Language Learning API v1.0',
     documentation: '/swagger',
-    endpoints: {
-      register: 'POST /api/v1/register',
-      login: 'POST /api/v1/auth/login',
-      googleAuth: 'POST /api/v1/auth/google',
-      refresh: 'POST /api/v1/refresh',
-      logout: 'POST /api/v1/logout',
-      profile: 'GET /api/v1/users/me',
-      updateProfile: 'PATCH /api/v1/users/me',
-      getUser: 'GET /api/v1/users/:id',
-      updateEnergy: 'PATCH /api/v1/users/me/energy',
-      updateCoins: 'PATCH /api/v1/users/me/coins',
-    },
+    endpoints: API_ENDPOINTS,
   });
 });
 
