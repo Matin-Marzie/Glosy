@@ -15,6 +15,7 @@ import { useNetwork } from '@/context/NetworkContext';
 import { useAuth } from '@/context/AuthContext';
 import { useVocabularyContext } from '@/context/VocabularyContext';
 import { useSentenceContext } from '@/context/SentenceContext';
+import { useDictionaryContext } from '@/context/DictionaryContext';
 import { VOCABULARY_ACTIONS, DEFAULT_VOCABULARY_CHANGES } from '@/hooks/useVocabulary';
 import { expandUserVocabulary } from '@/utils/expandVocabulary';
 import { SENTENCE_ACTIONS, DEFAULT_SENTENCE_CHANGES } from '@/hooks/useSentences';
@@ -22,16 +23,6 @@ import { getLearningLanguageChangeWait, recordLearningLanguageChange, formatLear
 import { switchCurrentLanguage, addLanguage as addLanguageApi, deleteLanguage as deleteLanguageApi } from '@/api/language';
 import LanguageSelectionSlide from '@/app/onboarding/components/LanguageSelectionSlide';
 import ProficiencySlide from '@/app/onboarding/components/ProficiencySlide';
-
-const renderBackdrop = (props: BottomSheetBackdropProps) => (
-    <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        pressBehavior="close"
-        opacity={0.5}
-    />
-);
 
 const getLanguageMeta = (languageId) =>
     Object.values(LANGUAGES_META).find((l) => l.id === Number(languageId));
@@ -57,6 +48,17 @@ const ProficiencyBar = ({ level, isDark }) => {
         </View>
     );
 };
+
+const SWITCH_FAILED_MESSAGE = 'Changing language is not possible at this point. Please try again later.';
+
+// How long to wait for the sheet's onDismiss before applying a finished
+// switch anyway (the close animation normally takes well under this)
+const PENDING_SWITCH_FALLBACK_MS = 1500;
+
+// Gap between clearing the old dictionary and applying the new one, so the
+// cheap "no dictionary" render commits (and the old data becomes garbage)
+// before the new data is built on top of it
+const CLEAR_BEFORE_FILL_MS = 50;
 
 const SWIPE_THRESHOLD = Dimensions.get('window').width / 3;
 
@@ -149,11 +151,28 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
     const { isAuthenticated, forceSync } = useAuth();
     const { vocabularyDispatch, setVocabularyChanges } = useVocabularyContext();
     const { sentenceDispatch, setSentenceChanges } = useSentenceContext();
+    const { prefetchDictionary, clearDictionary, applyPrefetchedDictionary } = useDictionaryContext();
 
     const [switchingId, setSwitchingId] = useState<number | string | null>(null);
     const [deletingId, setDeletingId] = useState<number | string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+    // A finished switch's local updates, waiting for the sheet to close
+    const pendingSwitchRef = useRef<(() => void) | null>(null);
+    const runPendingSwitch = useCallback((source: string) => {
+        const apply = pendingSwitchRef.current;
+        if (!apply) return;
+        pendingSwitchRef.current = null;
+
+        // Clear first, then fill - see clearDictionary. The old dictionary is
+        // released by the clear render, so the old and new ones are never
+        // alive at the same time. The fill is still one synchronous block.
+        clearDictionary();
+        setTimeout(() => {
+            apply();
+        }, CLEAR_BEFORE_FILL_MS);
+    }, [clearDictionary]);
 
     // 'list' shows the account's languages; 'select'/'level' are the two
     // steps of the add-language flow, reusing the onboarding slides.
@@ -180,7 +199,9 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
         [languages]
     );
 
-    const canAddLanguage = isAuthenticated && isOnline;
+    // Not while a switch or delete is in progress - the new language would be
+    // added while the account's languages are still changing
+    const canAddLanguage = isAuthenticated && isOnline && switchingId === null && deletingId === null;
     // A user must always have at least one language
     const canDeleteLanguage = isAuthenticated && isOnline && languages.length > 1;
 
@@ -198,6 +219,8 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
 
         setSwitchingId(language.id);
 
+        // Every request that can fail runs before anything local changes - if
+        // one fails, the user stays on their current language untouched.
         try {
             if (isAuthenticated) {
                 // Flush any pending vocabulary changes while they're still
@@ -206,53 +229,90 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
                 // to the new language on the next background sync.
                 const syncedOk = await forceSync();
                 if (!syncedOk) {
-                    setErrorMessage('Could not sync your progress. Please try again.');
-                    setSwitchingId(null);
+                    setErrorMessage(SWITCH_FAILED_MESSAGE);
                     return;
                 }
+            }
 
+            // Download the new language's dictionary before switching, so the
+            // switch never leaves the user on a language without one
+            const learningCode = language.learning_language?.code;
+            const nativeCode = language.native_language?.code;
+            const dictionaryOk = await prefetchDictionary(learningCode, nativeCode);
+            if (!dictionaryOk) {
+                setErrorMessage(SWITCH_FAILED_MESSAGE);
+                return;
+            }
+
+            // The server switch (if any) is the last request that can fail.
+            // The local updates are collected here and applied only once the
+            // sheet has finished closing: applying them in the same JS task
+            // as dismiss() made the big list re-render (thousands of words)
+            // collide with the sheet's close animation and froze the app for
+            // ~15s. They're still applied together, in one synchronous block.
+            let applySwitch: () => void;
+            if (isAuthenticated) {
                 const response = await switchCurrentLanguage(Number(language.id));
+                const newVocabulary = expandUserVocabulary(response.user_vocabulary);
 
-                await setUserProgress((prev) => ({
-                    ...prev,
-                    languages: response.user_progress.languages,
-                }));
-                vocabularyDispatch({ type: VOCABULARY_ACTIONS.SET, payload: expandUserVocabulary(response.user_vocabulary) });
-                sentenceDispatch({ type: SENTENCE_ACTIONS.SET, payload: response.user_sentences });
-                // Defensive: the flush above should have already cleared this,
-                // but the new vocabulary/sentences just replaced local state
-                // wholesale, so any leftover entries here can no longer apply
-                // to anything.
-                await setVocabularyChanges(DEFAULT_VOCABULARY_CHANGES);
-                await setSentenceChanges(DEFAULT_SENTENCE_CHANGES);
+                applySwitch = () => {
+                    // No awaits in here - every update lands in the same
+                    // render, so screens like Home match the new vocabulary
+                    // against the new dictionary once, not first against the old one
+                    applyPrefetchedDictionary(learningCode, nativeCode);
+                    setUserProgress((prev) => ({
+                        ...prev,
+                        languages: response.user_progress.languages,
+                    }));
+                    vocabularyDispatch({ type: VOCABULARY_ACTIONS.SET, payload: newVocabulary });
+                    sentenceDispatch({ type: SENTENCE_ACTIONS.SET, payload: response.user_sentences });
+                    // Defensive: the flush above should have already cleared this,
+                    // but the new vocabulary/sentences just replaced local state
+                    // wholesale, so any leftover entries here can no longer apply
+                    // to anything.
+                    setVocabularyChanges(DEFAULT_VOCABULARY_CHANGES);
+                    setSentenceChanges(DEFAULT_SENTENCE_CHANGES);
+                };
             } else {
                 // Guest accounts never accumulate more than one language today,
                 // but handle it locally just in case - no server state to touch.
-                await setUserProgress((prev) => ({
-                    ...prev,
-                    languages: (prev.languages || []).map((l) => ({
-                        ...l,
-                        is_current_language: l.id === language.id,
-                    })),
-                }));
+                applySwitch = () => {
+                    applyPrefetchedDictionary(learningCode, nativeCode);
+                    setUserProgress((prev) => ({
+                        ...prev,
+                        languages: (prev.languages || []).map((l) => ({
+                            ...l,
+                            is_current_language: l.id === language.id,
+                        })),
+                    }));
+                };
             }
 
             recordLearningLanguageChange();
 
-            // Dictionary and Reels both react to the userProgress update above
-            // on their own (DictionaryContext and ReelsContext each watch the
-            // current language codes internally and refetch themselves) -
-            // no need to trigger those fetches from here.
+            // Dictionary and Reels both react to the userProgress update in
+            // applySwitch on their own (DictionaryContext and ReelsContext each
+            // watch the current language codes internally and refetch
+            // themselves) - no need to trigger those fetches from here. The
+            // dictionary one sees the pair is already shown and does nothing.
 
-            if (ref && 'current' in ref) {
-                ref.current?.dismiss();
+            if (ref && 'current' in ref && ref.current) {
+                pendingSwitchRef.current = applySwitch;
+                ref.current.dismiss();
+                // Fallback in case onDismiss never fires (e.g. the sheet was
+                // already closing) - whichever comes first applies it, once
+                setTimeout(() => runPendingSwitch('fallback timer'), PENDING_SWITCH_FALLBACK_MS);
+            } else {
+                pendingSwitchRef.current = applySwitch;
+                runPendingSwitch('no sheet ref');
             }
         } catch (err) {
-            setErrorMessage(err.message || 'Could not switch language. Please try again.');
+            console.warn('Language switch failed:', err);
+            setErrorMessage(SWITCH_FAILED_MESSAGE);
         } finally {
             setSwitchingId(null);
         }
-    }, [switchingId, isOnline, isAuthenticated, forceSync, setUserProgress, vocabularyDispatch, setVocabularyChanges, sentenceDispatch, setSentenceChanges, ref]);
+    }, [switchingId, isOnline, isAuthenticated, forceSync, prefetchDictionary, applyPrefetchedDictionary, runPendingSwitch, setUserProgress, vocabularyDispatch, setVocabularyChanges, sentenceDispatch, setSentenceChanges, ref]);
 
     const performDeleteLanguage = useCallback(async (language) => {
         setErrorMessage(null);
@@ -406,6 +466,7 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
     }, [addNative, addTarget, addLevel, isAddingLanguage, forceSync, setUserProgress, vocabularyDispatch, setVocabularyChanges, sentenceDispatch, setSentenceChanges, ref]);
 
     const handleDismiss = useCallback(() => {
+        runPendingSwitch('onDismiss');
         setMode('list');
         setAddNative(null);
         setAddTarget(null);
@@ -418,7 +479,22 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
         // stuck spinner if the sheet is reopened before that settles.
         setSwitchingId(null);
         setDeletingId(null);
-    }, []);
+    }, [runPendingSwitch]);
+
+    // While the current language is changing, the user can't close the sheet
+    // (swipe down, backdrop tap or back button) - it closes itself once the
+    // switch succeeds, or stays open to show the error if it fails.
+    const isChangingLanguage = switchingId !== null || isAddingLanguage;
+
+    const renderBackdrop = useCallback((props: BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+            {...props}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+            pressBehavior={isChangingLanguage ? 'none' : 'close'}
+            opacity={0.5}
+        />
+    ), [isChangingLanguage]);
 
     const handleSheetChange = useCallback((index: number) => {
         setIsSheetOpen(index >= 0);
@@ -431,6 +507,7 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
     useEffect(() => {
         if (!isSheetOpen) return;
         const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+            if (isChangingLanguage) return true;
             if (mode !== 'list') {
                 handleBackFromAdd();
             } else if (ref && 'current' in ref) {
@@ -439,14 +516,14 @@ const LanguageSwitchSheet = forwardRef<BottomSheetModal>((_props, ref) => {
             return true;
         });
         return () => sub.remove();
-    }, [isSheetOpen, mode, handleBackFromAdd, ref]);
+    }, [isSheetOpen, isChangingLanguage, mode, handleBackFromAdd, ref]);
 
     return (
         <BottomSheetModal
             index={0}
             ref={ref}
             snapPoints={snapPoints}
-            enablePanDownToClose
+            enablePanDownToClose={!isChangingLanguage}
             topInset={insets.top}
             backdropComponent={renderBackdrop}
             backgroundStyle={isDark ? { backgroundColor: DARK_COLORS.surface } : undefined}
