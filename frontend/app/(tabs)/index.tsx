@@ -33,7 +33,9 @@ export default function HomeScreen() {
   const { userSentences } = useSentenceContext();
   const { dictionary, dictionaryLoading } = useDictionaryContext();
   const [search, setSearch] = useState('');
-  const [filteredWords, setFilteredWords] = useState([]); // To Do: don't duplicate state, remove filteredWords
+  // Only the debounced search result lives in state - "my words" (empty
+  // search) is derived during render, see myWords below
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   // True only while a non-empty search query is debouncing/being computed -
   // the empty-query "my words" path is immediate, so it never sets this.
@@ -106,65 +108,80 @@ export default function HomeScreen() {
     return map;
   }, [words]);
 
-  // Each word's normalized written_form, computed once per dictionary fetch
-  // instead of on every keystroke. Search used to call normalizeQuery()
-  // (trim + lowercase + diacritics-strip) on all ~11,000 words every single
-  // time the debounce fired - the word's own text never changes, only the
-  // query does, so there's no reason to redo that work per search.
-  const normalizedWordEntries = useMemo(
-    () => words.map((word) => ({
-      word,
-      normalized: normalizeQuery(word.written_form ?? ''),
-      normalizedTranslations: (word.translations ?? []).map((t) => normalizeQuery(t ?? '')),
-    })),
-    [words]
-  );
+  // Each word's normalized written_form, computed once per dictionary instead
+  // of on every keystroke. Search used to call normalizeQuery() (trim +
+  // lowercase + diacritics-strip) on all ~11,000 words every single time the
+  // debounce fired - the word's own text never changes, only the query does.
+  // Built lazily on the first search, not on every dictionary change - most
+  // dictionary loads (app start, language switch) never lead to a search,
+  // and this is the most expensive index on the screen.
+  const searchIndexRef = useRef<{ words: any[]; entries: { word: any; normalized: string; normalizedTranslations: string[] }[] } | null>(null);
+  const getSearchIndex = useCallback(() => {
+    let index = searchIndexRef.current;
+    if (!index || index.words !== words) {
+      index = {
+        words,
+        entries: words.map((word) => ({
+          word,
+          normalized: normalizeQuery(word.written_form ?? ''),
+          normalizedTranslations: (word.translations ?? []).map((t) => normalizeQuery(t ?? '')),
+        })),
+      };
+      searchIndexRef.current = index;
+    }
+    return index.entries;
+  }, [words]);
+
+  const query = normalizeQuery(search);
+  const isQueryEmpty = !query;
+
+  // User's vocabulary words (shown when search is empty), sorted by
+  // created_at (newest first). Derived during render instead of copied into
+  // state by an effect, so a vocabulary/dictionary change costs one render
+  // and one pass, not two. Skipped while searching.
+  const myWords = useMemo(() => {
+    if (!isQueryEmpty || !userVocabulary) return [];
+    const vocabularyWords = Object.keys(userVocabulary)
+      .map((id) => wordsById.get(id))
+      .filter(Boolean);
+    return sortByCreatedAtDesc(vocabularyWords, (word) => userVocabulary[word.id]?.created_at);
+  }, [isQueryEmpty, userVocabulary, wordsById, sortByCreatedAtDesc]);
 
   // Debounced search effect
   useEffect(() => {
-    const query = normalizeQuery(search);
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
 
     if (!query) {
-      // Show user's vocabulary words when search is empty, sorted by
-      // created_at (newest first). No debounce here - there's no typing to
-      // wait out, so compute immediately instead of adding an artificial
-      // delay before the screen shows anything.
-      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
       setIsSearching(false);
-      const vocabularyWords = userVocabulary
-        ? Object.keys(userVocabulary)
-          .map((id) => wordsById.get(id))
-          .filter(Boolean)
-        : [];
-      setFilteredWords(sortByCreatedAtDesc(vocabularyWords, (word) => userVocabulary[word.id]?.created_at));
       return;
     }
 
-    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
     // Show the spinner immediately (covers both the debounce wait and the
     // filter/sort itself), not just while the setTimeout callback runs.
     setIsSearching(true);
 
     debounceTimeout.current = setTimeout(() => {
       // Filter by search query using each word's precomputed normalized
-      // form (see normalizedWordEntries) - only a cheap startsWith()/includes()
+      // form (see getSearchIndex) - only a cheap startsWith()/includes()
       // per word now, not a fresh normalize+compare on every keystroke.
       // Matches either the word's own spelling (prefix) or any of its
       // translations (substring) - so searching in your native language
       // finds the target-language word too.
-      const filtered = normalizedWordEntries
+      const filtered = getSearchIndex()
         .filter((entry) =>
           entry.normalized.startsWith(query) ||
           entry.normalizedTranslations.some((t) => t.includes(query))
         )
         .map((entry) => entry.word);
 
-      setFilteredWords(sortByCreatedAtDesc(filtered, (word) => userVocabulary?.[word.id]?.created_at));
+      setSearchResults(sortByCreatedAtDesc(filtered, (word) => userVocabulary?.[word.id]?.created_at));
       setIsSearching(false);
     }, 500);
 
     return () => clearTimeout(debounceTimeout.current ?? undefined);
-  }, [search, normalizedWordEntries, wordsById, userVocabulary, sortByCreatedAtDesc]);
+  }, [query, getSearchIndex, userVocabulary, sortByCreatedAtDesc]);
+
+  const filteredWords = isQueryEmpty ? myWords : searchResults;
 
   return (
     <View style={[styles.container, isDark && { backgroundColor: DARK_COLORS.background }]}>
