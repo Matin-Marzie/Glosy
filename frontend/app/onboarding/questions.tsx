@@ -19,7 +19,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useDictionaryContext } from '@/context/DictionaryContext';
 import { getLevelsBelowProficiency, getDistanceForWordLevel } from '@/constants/Vocabulary';
 import { seedFieldsForDistance } from '@/utils/fsrs';
-import { VOCABULARY_ACTIONS, DEFAULT_VOCABULARY_CHANGES } from '@/hooks/useVocabulary';
+import { VOCABULARY_ACTIONS, DEFAULT_VOCABULARY_CHANGES, vocabularyChangesReducer } from '@/hooks/useVocabulary';
 import { expandUserVocabulary } from '@/utils/expandVocabulary';
 import { SENTENCE_ACTIONS, DEFAULT_SENTENCE_CHANGES } from '@/hooks/useSentences';
 
@@ -151,10 +151,16 @@ export default function OnboardingQuestions() {
     // Uses vocabularyDispatch (not bulkAddVocabulary) so these are tracked in
     // vocabularyChanges and actually sent to the backend as manual inserts -
     // bulkAddVocabulary only updates local state and is never synced.
+    // vocabularyDispatch only queues a state update, so `vocabularyChanges`
+    // in this closure won't include these inserts yet - run the same actions
+    // through vocabularyChangesReducer to get what to send to Google sign-up below.
+    let vocabularyChangesToSend = vocabularyChanges;
     if (selectedLearningLanguage?.code === 'fa' && selectedLevel === 'N') {
       const FARSI_STARTER_WORD_IDS = [203488, 200000, 200047, 200347]; // سلام, آب, بابا, چای
       for (const wordId of FARSI_STARTER_WORD_IDS) {
-        vocabularyDispatch({ type: VOCABULARY_ACTIONS.ADD, payload: { wordId } });
+        const action = { type: VOCABULARY_ACTIONS.ADD, payload: { wordId } };
+        vocabularyDispatch(action);
+        vocabularyChangesToSend = vocabularyChangesReducer(vocabularyChangesToSend, action);
       }
     }
 
@@ -172,7 +178,7 @@ export default function OnboardingQuestions() {
             coins: userProgress.coins,
             languages: newLanguages,
           },
-          vocabulary_changes: vocabularyChanges,
+          vocabulary_changes: vocabularyChangesToSend,
           sentence_changes: sentenceChanges,
         });
 

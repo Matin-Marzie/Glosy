@@ -172,6 +172,14 @@ const SyncSchema = Joi.object({
         last_review: Joi.date().allow(null).messages({
           'date.base': 'last_review must be a valid date or null',
         }),
+        review_count: Joi.number().integer().min(0).messages({
+          'number.base': 'review_count must be a number',
+          'number.integer': 'review_count must be an integer',
+          'number.min': 'review_count must be at least 0',
+        }),
+        next_review_at: Joi.date().allow(null).messages({
+          'date.base': 'next_review_at must be a valid date or null',
+        }),
       }).min(1).messages({
         'object.min': 'Each update entry must have at least one field',
       })

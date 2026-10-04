@@ -18,8 +18,11 @@ import { requestVerificationCode, registerWithGoogle } from '../../api/auth';
 import { useProfile } from '@/context/ProfileContext';
 import { useProgress } from '@/context/ProgressContext';
 import { useVocabularyContext } from '@/context/VocabularyContext';
+import { useSentenceContext } from '@/context/SentenceContext';
 import { useAuth } from '@/context/AuthContext';
 import { VOCABULARY_ACTIONS, DEFAULT_VOCABULARY_CHANGES } from '@/hooks/useVocabulary';
+import { expandUserVocabulary } from '@/utils/expandVocabulary';
+import { SENTENCE_ACTIONS, DEFAULT_SENTENCE_CHANGES } from '@/hooks/useSentences';
 import { useColorScheme } from '@/components/useColorScheme';
 import TouchableOpacity from '@/components/TouchableOpacity';
 
@@ -54,6 +57,7 @@ export default function RegisterScreen({ onRegisterSuccess }: RegisterScreenProp
   const { userProfile, updateUserProfile } = useProfile();
   const { userProgress, setUserProgress } = useProgress();
   const { vocabularyChanges, vocabularyDispatch, setVocabularyChanges } = useVocabularyContext();
+  const { sentenceChanges, sentenceDispatch, setSentenceChanges } = useSentenceContext();
   const { setIsAuthenticated, setHasCompletedOnboarding, hasCompletedOnboarding, setPendingGoogleAuth } = useAuth();
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -165,24 +169,31 @@ export default function RegisterScreen({ onRegisterSuccess }: RegisterScreenProp
         return;
       }
 
-      const apiResponse = await registerWithGoogle({
+      const payload = {
         idToken,
         platform,
         user_profile: userProfile,
         user_progress: userProgress,
         vocabulary_changes: vocabularyChanges,
-      });
+        sentence_changes: sentenceChanges,
+      };
 
-      if (apiResponse.status === 201 && apiResponse.data) {
+      const apiResponse = await registerWithGoogle(payload);
+
+      if (apiResponse.status === 201) {
         setIsAuthenticated(true);
         setHasCompletedOnboarding(true); // runtime only
-        await updateUserProfile(apiResponse.data.user_profile);
-        await setUserProgress(apiResponse.data.user_progress);
-        vocabularyDispatch({ type: VOCABULARY_ACTIONS.SET, payload: apiResponse.data.user_vocabulary });
+        if (apiResponse.data) {
+          await updateUserProfile(apiResponse.data?.user_profile);
+          await setUserProgress(apiResponse.data?.user_progress);
+          vocabularyDispatch({ type: VOCABULARY_ACTIONS.SET, payload: expandUserVocabulary(apiResponse.data?.user_vocabulary) });
+          sentenceDispatch({ type: SENTENCE_ACTIONS.SET, payload: apiResponse.data?.user_sentences });
+        }
         // The manually-tracked changes just sent were already applied
         // server-side - clear them so a later background sync doesn't
         // try to re-insert them and hit a duplicate-key error.
         setVocabularyChanges(DEFAULT_VOCABULARY_CHANGES);
+        setSentenceChanges(DEFAULT_SENTENCE_CHANGES);
         router.replace('/(tabs)');
       }
     } catch (error: any) {

@@ -19,14 +19,24 @@ const userSentencesModel = {
             us.created_at,
             us.review_count,
             us.next_review_at,
-            s.text
+            s.text,
+            tr.text AS translation
         FROM user_sentences us
         JOIN sentences s ON s.id = us.sentence_id
+        JOIN user_languages ul ON ul.id = us.user_languages_id
+        -- translation into this language pair's native language, if one exists
+        LEFT JOIN LATERAL (
+            SELECT st.text
+            FROM sentence_translations str
+            JOIN sentences st ON st.id = str.translation_sentence_id
+            WHERE str.sentence_id = s.id AND st.language_id = ul.native_language_id
+            LIMIT 1
+        ) tr ON true
         WHERE us.user_id = $1 AND us.user_languages_id = $2
     `;
 
         const result = await pool.query(query, [userId, userLanguagesId]);
-        // reshape → { sentenceId: { mastery_level, last_review, created_at, review_count, next_review_at, text } }
+        // reshape → { sentenceId: { mastery_level, last_review, created_at, review_count, next_review_at, text, translation } }
         return result.rows.reduce((acc, row) => {
             acc[row.sentence_id] = {
                 mastery_level: row.mastery_level,
@@ -35,6 +45,7 @@ const userSentencesModel = {
                 review_count: row.review_count,
                 next_review_at: row.next_review_at,
                 text: row.text,
+                ...(row.translation != null && { translation: row.translation }),
             };
             return acc;
         }, {});

@@ -193,6 +193,12 @@ const registerController = async (req, res) => {
       // Note: deletes are not processed during registration (nothing to delete for new user)
     }
 
+    // add()/update() only return progress fields - re-read so the response
+    // carries each sentence's text and translation, same as login does.
+    if (Object.keys(new_user_sentences).length > 0) {
+      new_user_sentences = await userSentencesModel.get(newUser.id, current_language.id);
+    }
+
     // Respond with user data, dictionary and tokens
     res.status(201).json({
       message: 'User registered successfully',

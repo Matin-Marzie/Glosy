@@ -126,6 +126,12 @@ const googleRegisterController = async (req, res) => {
       // Note: deletes are not processed during registration (nothing to delete for a new user)
     }
 
+    // add()/update() only return progress fields - re-read so the response
+    // carries each sentence's text and translation, same as login does.
+    if (Object.keys(userSentences).length > 0) {
+      userSentences = await userSentencesModel.get(user.id, current_language.id);
+    }
+
     logEvents(`New user registered via Google: ${email} (${username})`, 'authLog.log');
 
     // Generate tokens

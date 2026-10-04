@@ -204,12 +204,14 @@ export default function LoginScreen() {
               await updateUserProfile(apiResponse.data?.user_profile);
               await setUserProgress(apiResponse.data?.user_progress);
               vocabularyDispatch({ type: VOCABULARY_ACTIONS.SET, payload: expandUserVocabulary(apiResponse.data?.user_vocabulary) });
+              sentenceDispatch({ type: SENTENCE_ACTIONS.SET, payload: apiResponse.data?.user_sentences });
             }
             // Overwrite discarded the local session entirely; Merge already
             // applied these changes server-side - either way, nothing local
             // is left to resync, so clear it before a background sync can
             // resend it and hit a duplicate-key error.
             setVocabularyChanges(DEFAULT_VOCABULARY_CHANGES);
+            setSentenceChanges(DEFAULT_SENTENCE_CHANGES);
             router.replace('/(tabs)');
           }
         } catch (apiError: any) {
