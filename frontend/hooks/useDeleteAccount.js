@@ -7,12 +7,14 @@ import { useProfile } from '../context/ProfileContext';
 import { useProgress } from '../context/ProgressContext';
 import { useVocabularyContext } from '../context/VocabularyContext';
 import { useSentenceContext } from '../context/SentenceContext';
+import { useUserReels } from '../context/UserReelsContext';
 import { useAuth } from '../context/AuthContext';
 import {
   DEFAULT_USER_PROFILE,
   DEFAULT_USER_PROGRESS,
   DEFAULT_USER_VOCABULARY,
   DEFAULT_USER_SENTENCES,
+  DEFAULT_USER_REELS,
 } from '../constants/defaults';
 import { DEFAULT_VOCABULARY_CHANGES } from './useVocabulary';
 import { DEFAULT_SENTENCE_CHANGES } from './useSentences';
@@ -29,6 +31,7 @@ export function useDeleteAccount() {
   const { setUserProgress } = useProgress();
   const { setUserVocabulary, setVocabularyChanges } = useVocabularyContext();
   const { setUserSentences, setSentenceChanges } = useSentenceContext();
+  const { setUserReels } = useUserReels();
   const { setIsAuthenticated, setHasCompletedOnboarding } = useAuth();
 
   const deleteAccount = useCallback(async () => {
@@ -47,7 +50,8 @@ export function useDeleteAccount() {
     setIsAuthenticated(false);
     setHasCompletedOnboarding(false);
     setUserProfile(DEFAULT_USER_PROFILE);
-  }, [setUserProfile, setUserProgress, setUserVocabulary, setVocabularyChanges, setUserSentences, setSentenceChanges, setIsAuthenticated, setHasCompletedOnboarding]);
+    setUserReels(DEFAULT_USER_REELS);
+  }, [setUserProfile, setUserProgress, setUserVocabulary, setVocabularyChanges, setUserSentences, setSentenceChanges, setUserReels, setIsAuthenticated, setHasCompletedOnboarding]);
 
   return { deleteAccount };
 }
