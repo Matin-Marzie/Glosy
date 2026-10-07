@@ -2,7 +2,7 @@
   "expo": {
     "name": "glosy",
     "slug": "glosy",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/splash-icon.png",
     "scheme": "glosy",
@@ -18,7 +18,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.glosy.app",
-      "versionCode": 4
+      "versionCode": 5
     },
     "web": {
       "bundler": "metro",
