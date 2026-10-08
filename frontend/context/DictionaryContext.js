@@ -179,7 +179,6 @@ export const DictionaryProvider = ({ children }) => {
       // Race-condition guard
       if (requestIdRef.current !== currentRequestId) return null;
 
-      console.log(`[Dictionary] Fetched ${learningCode}-${nativeCode}`);
       const expanded = expandDictionaryPayload(res);
       showDictionary(cacheKey, expanded, Date.now());
       writeCache(cacheKey, res);
@@ -223,7 +222,6 @@ export const DictionaryProvider = ({ children }) => {
 
     try {
       const res = await getDictionaryByCodes(learningCode, nativeCode);
-      console.log(`[Dictionary] Fetched ${learningCode}-${nativeCode} (prefetch)`);
       prefetchedRef.current[cacheKey] = {
         raw: res,
         expanded: expandDictionaryPayload(res),

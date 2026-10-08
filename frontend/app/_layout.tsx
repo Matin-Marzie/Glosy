@@ -119,6 +119,12 @@ function RootLayoutNav() {
     // [2] Check: onboardingComplete? — if NO, redirect to onboarding
     if (!hasCompletedOnboarding) {
       if (!inOnboardingGroup) {
+        // replace() only swaps the top screen - on logout from e.g.
+        // settings/account, (tabs) and settings would stay stacked under
+        // landing. Pop back to the first screen first, then replace it.
+        if (router.canDismiss()) {
+          router.dismissAll();
+        }
         router.replace('/onboarding/landing');
       }
     } else {

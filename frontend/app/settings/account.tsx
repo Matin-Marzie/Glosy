@@ -88,8 +88,9 @@ export default function AccountScreen() {
             } catch (err) {
               console.error('Logout error:', err);
             } finally {
+              // No navigation here - logout() clears hasCompletedOnboarding and
+              // the auth guard in app/_layout.tsx routes to landing.
               setIsLoggingOut(false);
-              router.replace('/onboarding/login');
             }
           },
         },
@@ -112,8 +113,9 @@ export default function AccountScreen() {
           onPress: async () => {
             setIsDeletingAccount(true);
             try {
+              // deleteAccount() clears hasCompletedOnboarding - the auth guard
+              // in app/_layout.tsx routes to landing.
               await deleteAccount();
-              router.replace('/onboarding/login');
             } catch (err) {
               console.error('Delete account error:', err);
               Alert.alert(
