@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, Alert, Image, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRouter } from 'expo-router';
+import { useNavigation, usePreventRemove, useRouter } from 'expo-router';
 import { useVideoPlayer } from 'expo-video';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
@@ -85,16 +85,20 @@ export default function CreateDetailsScreen() {
     router.push('/(tabs)/create/sync-subtitles');
   }, [router, player]);
 
-  useEffect(() => {
-    const sub = navigation.addListener('beforeRemove', (e) => {
-      e.preventDefault();
-      Alert.alert('Discard changes?', "You'll lose what you've entered so far.", [
-        { text: 'Keep Editing', style: 'cancel' },
-        { text: 'Discard', style: 'destructive', onPress: () => navigation.dispatch(e.data.action) },
-      ]);
-    });
-    return sub;
-  }, [navigation]);
+  const [preventLeave, setPreventLeave] = useState(true);
+  usePreventRemove(preventLeave, ({ repeat }) => {
+    Alert.alert('Discard changes?', "You'll lose what you've entered so far.", [
+      { text: 'Keep Editing', style: 'cancel' },
+      {
+        text: 'Discard',
+        style: 'destructive',
+        onPress: () => {
+          setPreventLeave(false);
+          repeat();
+        },
+      },
+    ]);
+  });
 
   if (!videoAsset) return null;
 

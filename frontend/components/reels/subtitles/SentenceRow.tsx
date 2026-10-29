@@ -1,7 +1,10 @@
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { Swipeable } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SharedValue } from 'react-native-reanimated';
+import { SwipeActionScale } from '@/components/SwipeActionScale';
 import { DARK_COLORS, PRIMARY_COLOR } from '@/constants/App';
 import type { Sentence, Token } from '../../../types/dialogue';
 
@@ -32,34 +35,29 @@ export function SentenceRow({ sentence, isCurrentLine, isDark, isRightToLeft, is
         .split(/\s+/)
         .map((word, index) => ({ word, position: index + 1 }));
 
-    const swipeableRef = useRef<Swipeable>(null);
+    const swipeableRef = useRef<SwipeableMethods>(null);
 
     // Swipe right reveals this panel; crossing SWIPE_THRESHOLD auto-triggers
     // the same save/unsave toggle as the bookmark button, then snaps closed -
     // the row stays in the list either way, unlike a swipe-to-delete.
-    const renderLeftActions = (_progress: Animated.AnimatedInterpolation<number>, dragX: Animated.AnimatedInterpolation<number>) => {
-        const scale = dragX.interpolate({
-            inputRange: [0, SWIPE_THRESHOLD],
-            outputRange: [0.5, 1],
-            extrapolate: 'clamp',
-        });
-
+    const renderLeftActions = (_progress: SharedValue<number>, translation: SharedValue<number>) => {
         return (
             <View style={[styles.swipeAction, isSaved ? styles.swipeActionRemove : styles.swipeActionSave]}>
-                <Animated.View style={{ transform: [{ scale }], alignItems: 'center' }}>
+                <SwipeActionScale translation={translation} threshold={SWIPE_THRESHOLD} style={{ alignItems: 'center' }}>
                     <FontAwesome name={isSaved ? 'bookmark' : 'bookmark-o'} size={20} color="#fff" />
                     <Text style={styles.swipeActionText}>{isSaved ? 'Unsave' : 'Save'}</Text>
-                </Animated.View>
+                </SwipeActionScale>
             </View>
         );
     };
 
     return (
-        <Swipeable
+        <ReanimatedSwipeable
             ref={swipeableRef}
             renderLeftActions={renderLeftActions}
             onSwipeableWillOpen={(direction) => {
-                if (direction === 'left') {
+                // ReanimatedSwipeable reports the left actions opening as 'right'
+                if (direction === 'right') {
                     onSavePress(sentence);
                     swipeableRef.current?.close();
                 }
@@ -115,7 +113,7 @@ export function SentenceRow({ sentence, isCurrentLine, isDark, isRightToLeft, is
                     </View>
                 </View>
             </Pressable>
-        </Swipeable>
+        </ReanimatedSwipeable>
     );
 }
 

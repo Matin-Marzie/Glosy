@@ -3,9 +3,11 @@ import { useNetwork } from '@/context/NetworkContext';
 import { useProgress } from '@/context/ProgressContext';
 import { FontAwesome5 } from '@expo/vector-icons';
 import React, { useState, useCallback, useMemo, useRef, memo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Dimensions } from 'react-native';
 import { getWikimediaDictionary, extractDefinitions } from '@/api/dictionary';
-import { Swipeable, ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { SwipeActionScale } from '@/components/SwipeActionScale';
 import { Ionicons } from '@expo/vector-icons';
 import { VOCABULARY_ACTIONS } from '@/hooks/useVocabulary';
 import { useVibration } from '@/hooks/useVibration';
@@ -78,14 +80,8 @@ function WordItem({ item, refreshedAt }) {
         });
     }, [word, vocabularyDispatch, isDeleting]);
 
-    const renderLeftActions = useCallback((progress, dragX) => {
+    const renderLeftActions = useCallback((progress, translation) => {
         if (!UserVocabularyEntry) return null;
-
-        const scale = dragX.interpolate({
-            inputRange: [0, swipeThreshold],
-            outputRange: [0.5, 1],
-            extrapolate: 'clamp',
-        });
 
         return (
             <TouchableOpacity
@@ -95,10 +91,10 @@ function WordItem({ item, refreshedAt }) {
                     swipeableRef.current?.close();
                 }}
             >
-                <Animated.View style={{ transform: [{ scale }], alignItems: 'center' }}>
+                <SwipeActionScale translation={translation} threshold={swipeThreshold} style={{ alignItems: 'center' }}>
                     <Ionicons name="trash-outline" size={24} color="#fff" />
                     <Text style={styles.deleteActionText}>Delete</Text>
-                </Animated.View>
+                </SwipeActionScale>
             </TouchableOpacity>
         );
     }, [UserVocabularyEntry, handleRemoveWord, swipeThreshold]);
@@ -161,11 +157,12 @@ function WordItem({ item, refreshedAt }) {
     }
 
     return (
-        <Swipeable
+        <ReanimatedSwipeable
             ref={swipeableRef}
             renderLeftActions={renderLeftActions}
             onSwipeableWillOpen={(direction) => {
-                if (direction === 'left') {
+                // ReanimatedSwipeable reports the left actions opening as 'right'
+                if (direction === 'right') {
                     handleRemoveWord();
                 }
             }}
@@ -261,7 +258,7 @@ function WordItem({ item, refreshedAt }) {
                 </ScrollView>
             )}
         </View>
-        </Swipeable>
+        </ReanimatedSwipeable>
     );
 }
 

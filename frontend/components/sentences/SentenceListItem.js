@@ -1,7 +1,8 @@
 import React, { useCallback, useRef, useState, memo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Swipeable } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { SwipeActionScale } from '@/components/SwipeActionScale';
 import { useSentenceContext } from '@/context/SentenceContext';
 import { SENTENCE_ACTIONS } from '@/hooks/useSentences';
 import { MASTERY_LEVELS } from '@/constants/Vocabulary';
@@ -29,13 +30,7 @@ function SentenceItem({ sentenceId, entry }) {
         });
     }, [sentenceId, sentenceDispatch, isDeleting]);
 
-    const renderLeftActions = useCallback((progress, dragX) => {
-        const scale = dragX.interpolate({
-            inputRange: [0, swipeThreshold],
-            outputRange: [0.5, 1],
-            extrapolate: 'clamp',
-        });
-
+    const renderLeftActions = useCallback((progress, translation) => {
         return (
             <TouchableOpacity
                 style={styles.deleteAction}
@@ -44,10 +39,10 @@ function SentenceItem({ sentenceId, entry }) {
                     swipeableRef.current?.close();
                 }}
             >
-                <Animated.View style={{ transform: [{ scale }], alignItems: 'center' }}>
+                <SwipeActionScale translation={translation} threshold={swipeThreshold} style={{ alignItems: 'center' }}>
                     <Ionicons name="trash-outline" size={24} color="#fff" />
                     <Text style={styles.deleteActionText}>Delete</Text>
-                </Animated.View>
+                </SwipeActionScale>
             </TouchableOpacity>
         );
     }, [handleRemove, swipeThreshold]);
@@ -57,11 +52,12 @@ function SentenceItem({ sentenceId, entry }) {
     }
 
     return (
-        <Swipeable
+        <ReanimatedSwipeable
             ref={swipeableRef}
             renderLeftActions={renderLeftActions}
             onSwipeableWillOpen={(direction) => {
-                if (direction === 'left') {
+                // ReanimatedSwipeable reports the left actions opening as 'right'
+                if (direction === 'right') {
                     handleRemove();
                 }
             }}
@@ -83,7 +79,7 @@ function SentenceItem({ sentenceId, entry }) {
                     <Text style={styles.masteryBadgeText}>{MASTERY_LEVELS[entry.mastery_level] || MASTERY_LEVELS[1]}</Text>
                 </View>
             </View>
-        </Swipeable>
+        </ReanimatedSwipeable>
     );
 }
 

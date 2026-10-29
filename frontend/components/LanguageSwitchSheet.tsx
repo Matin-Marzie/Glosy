@@ -1,8 +1,11 @@
 import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert, Animated, BackHandler, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert, BackHandler, Dimensions } from 'react-native';
 import { BottomSheetModal, BottomSheetScrollView, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
-import { Swipeable } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SharedValue } from 'react-native-reanimated';
+import { SwipeActionScale } from '@/components/SwipeActionScale';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import TouchableOpacity from '@/components/TouchableOpacity';
@@ -69,15 +72,9 @@ const LanguageRow = ({
     language, meta, nativeMeta, displayName, isCurrent, isSwitchingThis, isDeletingThis,
     anyActionInProgress, disabled, canDeleteLanguage, isDark, onSelect, onDelete,
 }) => {
-    const swipeableRef = useRef<Swipeable>(null);
+    const swipeableRef = useRef<SwipeableMethods>(null);
 
-    const renderLeftActions = useCallback((_progress, dragX) => {
-        const scale = dragX.interpolate({
-            inputRange: [0, SWIPE_THRESHOLD],
-            outputRange: [0.5, 1],
-            extrapolate: 'clamp',
-        });
-
+    const renderLeftActions = useCallback((_progress: SharedValue<number>, translation: SharedValue<number>) => {
         return (
             <TouchableOpacity
                 style={styles.deleteAction}
@@ -86,23 +83,24 @@ const LanguageRow = ({
                     onDelete();
                 }}
             >
-                <Animated.View style={{ transform: [{ scale }], alignItems: 'center' }}>
+                <SwipeActionScale translation={translation} threshold={SWIPE_THRESHOLD} style={{ alignItems: 'center' }}>
                     <FontAwesome name="trash-o" size={22} color="#fff" />
                     <Text style={styles.deleteActionText}>Delete</Text>
-                </Animated.View>
+                </SwipeActionScale>
             </TouchableOpacity>
         );
     }, [onDelete]);
 
     return (
-        <Swipeable
+        <ReanimatedSwipeable
             ref={swipeableRef}
             renderLeftActions={renderLeftActions}
             leftThreshold={SWIPE_THRESHOLD}
             overshootLeft={false}
             enabled={canDeleteLanguage && !anyActionInProgress}
             onSwipeableWillOpen={(direction) => {
-                if (direction === 'left') {
+                // ReanimatedSwipeable reports the left actions opening as 'right'
+                if (direction === 'right') {
                     swipeableRef.current?.close();
                     onDelete();
                 }
@@ -137,7 +135,7 @@ const LanguageRow = ({
                     <FontAwesome name="check-circle" size={22} color={PRIMARY_COLOR} />
                 ) : null}
             </TouchableOpacity>
-        </Swipeable>
+        </ReanimatedSwipeable>
     );
 };
 
